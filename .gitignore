@@ -23,6 +23,6 @@ dist
 dist-ssr
 *.sln
 *.sw?
-*.supabase
-*.stitch_import
-*.github
+.supabase
+.stitch_import
+.github
