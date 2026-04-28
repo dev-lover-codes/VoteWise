@@ -7,6 +7,7 @@ VoteWise is an interactive election process education assistant designed for Ind
 - **Tagline:** Your guide to India's democracy
 - **Target:** First-time voters, students, and Indian citizens
 - **Context:** Indian Election Commission (ECI) guidelines
+- **Repository:** [https://github.com/dev-lover-codes/VoteWise.git](https://github.com/dev-lover-codes/VoteWise.git)
 
 ## Design System
 - **Colors:** 
