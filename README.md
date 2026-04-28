@@ -49,3 +49,4 @@ This application was built as part of PromptWars 2026, demonstrating AI-assisted
 ## Live Demo
 [Live Demo Link Placeholder]
 # VoteWise
+# VoteWise
