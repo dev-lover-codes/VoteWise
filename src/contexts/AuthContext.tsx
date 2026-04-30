@@ -53,7 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id: res.user.uid,
       full_name: name,
       email: e,
-      state: state
+      state: state,
+      registration_status: 'Pending',
+      has_voted: false
     }]);
   };
 

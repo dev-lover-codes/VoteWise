@@ -9,6 +9,8 @@ CREATE TABLE users_profile (
     state TEXT,
     age INTEGER,
     is_first_time_voter BOOLEAN DEFAULT FALSE,
+    registration_status TEXT DEFAULT 'Pending',
+    has_voted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -57,7 +59,7 @@ CREATE POLICY "Users can insert own profile" ON users_profile FOR INSERT WITH CH
 -- Policies for quiz_attempts
 CREATE POLICY "Users can read own quiz attempts" ON quiz_attempts FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own quiz attempts" ON quiz_attempts FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Anyone can read leaderboard" ON quiz_attempts FOR SELECT USING (true); -- Leaderboard needs public read
+CREATE POLICY "Anyone can read leaderboard" ON quiz_attempts FOR SELECT USING (true);
 
 -- Policies for chat_history
 CREATE POLICY "Users can read own chat history" ON chat_history FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);

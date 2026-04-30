@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserStats, getQuizHistory } from '../lib/supabase';
-import { LogOut, User, Award, CheckCircle, BarChart3, Sun, Moon } from 'lucide-react';
+import { getUserStats, getQuizHistory, getUserProfile } from '../lib/supabase';
+import { LogOut, User, Award, CheckCircle, BarChart3, Sun, Moon, BadgeCheck, Activity, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const [stats, setStats] = useState({ count: 0, avg: 0, best: 0 });
   const [history, setHistory] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains('dark')
   );
@@ -18,6 +19,7 @@ export default function Profile() {
     if (user) {
       getUserStats(user.uid).then(setStats);
       getQuizHistory(user.uid).then(setHistory);
+      getUserProfile(user.uid).then(setUserProfile);
     }
   }, [user]);
 
@@ -44,8 +46,23 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-heading font-bold text-primary dark:text-white mb-8">Your Profile</h1>
+      <h1 className="text-3xl font-heading font-bold text-primary dark:text-white mb-8">Voter Dashboard</h1>
       
+      {/* Progress Bar Section */}
+      <div className="glass-card bg-white dark:bg-white/5 p-6 mb-8 border border-gray-200 dark:border-white/10">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <Activity className="text-primary" size={20} /> Voter Education Progress
+          </h3>
+          <span className="font-bold text-accent">
+            {Math.round(((userProfile?.registration_status === 'Complete' ? 1 : 0) + (userProfile?.has_voted ? 1 : 0) + (stats.count > 0 ? 1 : 0)) / 3 * 100)}%
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
+          <div className="bg-primary h-3 rounded-full transition-all duration-1000" style={{ width: `${((userProfile?.registration_status === 'Complete' ? 1 : 0) + (userProfile?.has_voted ? 1 : 0) + (stats.count > 0 ? 1 : 0)) / 3 * 100}%` }}></div>
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <div className="glass-card bg-white dark:bg-white/5 p-6 flex flex-col items-center justify-center text-center md:col-span-1">
           {user.photoURL ? (
@@ -57,6 +74,23 @@ export default function Profile() {
           )}
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">{user.displayName || 'User'}</h2>
           <p className="text-slate-500 mb-6">{user.email}</p>
+          
+          <div className="w-full space-y-3 mb-6">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Registration</span>
+              <span className={`text-sm font-bold ${userProfile?.registration_status === 'Complete' ? 'text-success' : 'text-accent'}`}>
+                {userProfile?.registration_status || 'Pending'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Badges Earned</span>
+              <div className="flex gap-2">
+                {userProfile?.registration_status === 'Complete' && <div title="Certified Registrant"><BadgeCheck className="text-primary" size={20} /></div>}
+                {userProfile?.has_voted && <div title="Certified Voter"><Award className="text-success" size={20} /></div>}
+                {stats.best >= 70 && <div title="Quiz Master"><Star className="text-accent" size={20} fill="currentColor" /></div>}
+              </div>
+            </div>
+          </div>
           
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
             <LogOut size={18} /> Sign Out

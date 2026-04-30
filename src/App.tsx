@@ -11,6 +11,8 @@ const Timeline = React.lazy(() => import('./pages/Timeline'));
 const Quiz = React.lazy(() => import('./pages/Quiz'));
 const Myths = React.lazy(() => import('./pages/Myths'));
 const Auth = React.lazy(() => import('./pages/Auth'));
+const Form6Guide = React.lazy(() => import('./pages/Form6Guide'));
+const MockEVM = React.lazy(() => import('./pages/MockEVM'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
@@ -35,6 +37,8 @@ function App() {
                 <Route path="/quiz" element={<Quiz />} />
                 <Route path="/myths" element={<Myths />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/register" element={<Form6Guide />} />
+                <Route path="/evm" element={<MockEVM />} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

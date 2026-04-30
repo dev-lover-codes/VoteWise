@@ -13,6 +13,8 @@ export default function Navbar() {
     { name: 'Timeline', path: '/timeline' },
     { name: 'Quiz', path: '/quiz' },
     { name: 'Myths', path: '/myths' },
+    { name: 'Register', path: '/register' },
+    { name: 'Mock EVM', path: '/evm' },
     { name: 'Chat AI', path: '/chat' }
   ];
 

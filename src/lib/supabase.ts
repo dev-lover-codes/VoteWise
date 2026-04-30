@@ -79,3 +79,21 @@ export async function getQuizHistory(userId: string) {
     if (error) console.error("Error fetching quiz history", error);
     return data || [];
 }
+
+export async function updateRegistrationStatus(userId: string, status: string) {
+  const { data, error } = await supabase.from('users_profile').update({ registration_status: status }).eq('id', userId);
+  if (error) console.error("Error updating registration status", error);
+  return data;
+}
+
+export async function updateVotingStatus(userId: string, hasVoted: boolean) {
+  const { data, error } = await supabase.from('users_profile').update({ has_voted: hasVoted }).eq('id', userId);
+  if (error) console.error("Error updating voting status", error);
+  return data;
+}
+
+export async function getUserProfile(userId: string) {
+  const { data, error } = await supabase.from('users_profile').select('*').eq('id', userId).single();
+  if (error) console.error("Error fetching user profile", error);
+  return data;
+}
