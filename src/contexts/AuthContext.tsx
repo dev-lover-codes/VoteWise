@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { type User, onAuthStateChanged } from 'firebase/auth';
 import { auth, signInWithPopup, googleProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from '../lib/firebase';
 import { supabase } from '../lib/supabase';
 
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(firebaseUser);
       if (firebaseUser) {
         // Ensure user exists in Supabase
-        const { data, error } = await supabase.from('users_profile').select('id').eq('id', firebaseUser.uid).single();
+        const { error } = await supabase.from('users_profile').select('id').eq('id', firebaseUser.uid).single();
         if (error && error.code === 'PGRST116') {
           // Record doesn't exist, create it
           await supabase.from('users_profile').insert([{

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { sendMessageToAI, SYSTEM_PROMPT } from '../lib/aiService';
-import { saveMessage, getSessionMessages } from '../lib/supabase';
+import { saveMessage } from '../lib/supabase';
 import { Send, Bot, User as UserIcon, PlusCircle, MessageSquare } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
