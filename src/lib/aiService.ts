@@ -1,35 +1,38 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const CLAUDE_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY || "mock-key";
 
-export const sendMessageToAI = async (messages: { role: string; content: string }[], systemPrompt: string) => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  console.log('Gemini API Key present:', !!apiKey);
-  
-  if (!apiKey) throw new Error('Gemini API key not found');
+export const SYSTEM_PROMPT = `You are VoteWise, an expert and friendly AI assistant specialized in Indian election processes. You help Indian citizens, especially first-time voters, understand everything about elections. Always base your answers on official Election Commission of India (ECI) guidelines. Structure your answers with clear bullet points or numbered steps when explaining processes. Keep language simple and beginner-friendly. When relevant, mention official ECI website (eci.gov.in) or Voter Helpline 1950. Never provide political opinions or support any political party. If asked about anything unrelated to elections or civic education, politely redirect the conversation. Always end complex answers with: 'For official information, visit eci.gov.in or call Voter Helpline 1950.'`;
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
-  });
-
+export async function sendMessageToAI(messages: { role: string; content: string }[], systemPrompt: string) {
   try {
-    // Convert message format to Gemini format
-    // role: "user" -> "user", role: "assistant" -> "model"
-    const history = messages.slice(0, -1).map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }]
-    }));
-
-    const lastMessage = messages[messages.length - 1].content;
-
-    const chat = model.startChat({
-      history: history,
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true' // Required for client-side requests
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022', // Updated to latest Sonnet
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: messages.map(m => ({
+            role: m.role === 'assistant' ? 'assistant' : 'user',
+            content: m.content
+        }))
+      })
     });
 
-    const result = await chat.sendMessage(lastMessage);
-    const response = await result.response;
-    return response.text();
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("AI API Error:", errorData);
+      throw new Error(errorData.error?.message || 'Failed to fetch AI response');
+    }
+
+    const data = await response.json();
+    return data.content[0].text;
   } catch (error) {
-    console.error('Error communicating with Gemini:', error);
-    throw error;
+    console.error("Error calling Claude API:", error);
+    throw new Error('AI is temporarily unavailable. Please try again.');
   }
-};
+}

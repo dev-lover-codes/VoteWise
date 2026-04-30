@@ -1,86 +1,77 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-import { auth, googleProvider } from '../lib/firebase';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth, signInWithPopup, googleProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from '../lib/firebase';
 import { supabase } from '../lib/supabase';
-import { 
-  onAuthStateChanged, 
-  signInWithPopup, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut as firebaseSignOut
-} from 'firebase/auth';
-import type { User as FirebaseUser } from 'firebase/auth';
 
 interface AuthContextType {
-  user: FirebaseUser | null;
+  user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (e: string, p: string) => Promise<void>;
   signUpWithEmail: (e: string, p: string, name: string, state: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  logOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-      
-      if (currentUser) {
-        // Upsert user to supabase
-        const { data } = await supabase.from('users_profile').select('*').eq('id', currentUser.uid).single();
-        if (!data) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        // Ensure user exists in Supabase
+        const { data, error } = await supabase.from('users_profile').select('id').eq('id', firebaseUser.uid).single();
+        if (error && error.code === 'PGRST116') {
+          // Record doesn't exist, create it
           await supabase.from('users_profile').insert([{
-            id: currentUser.uid,
-            email: currentUser.email,
-            full_name: currentUser.displayName || '',
-            avatar_url: currentUser.photoURL || ''
+            id: firebaseUser.uid,
+            full_name: firebaseUser.displayName || 'User',
+            email: firebaseUser.email,
+            avatar_url: firebaseUser.photoURL
           }]);
         }
       }
+      setLoading(false);
     });
-
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const signInWithGoogle = async () => {
     await signInWithPopup(auth, googleProvider);
   };
 
-  const signInWithEmail = async (email: string, pass: string) => {
-    await signInWithEmailAndPassword(auth, email, pass);
+  const signInWithEmail = async (e: string, p: string) => {
+    await signInWithEmailAndPassword(auth, e, p);
   };
 
-  const signUpWithEmail = async (email: string, pass: string, name: string, state: string) => {
-    const result = await createUserWithEmailAndPassword(auth, email, pass);
+  const signUpWithEmail = async (e: string, p: string, name: string, state: string) => {
+    const res = await createUserWithEmailAndPassword(auth, e, p);
     await supabase.from('users_profile').insert([{
-      id: result.user.uid,
-      email,
+      id: res.user.uid,
       full_name: name,
-      state
+      email: e,
+      state: state
     }]);
   };
 
-  const signOut = async () => {
-    await firebaseSignOut(auth);
+  const logOut = async () => {
+    await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, logOut }}>
       {!loading && children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}

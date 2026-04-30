@@ -1,40 +1,15 @@
-@import "tailwindcss";
-
-@theme {
-  --color-primary: #1B2F5E;
-  --color-accent: #FF6B00;
-  --color-success: #1A6B3A;
-  --color-background-light: #F8F9FC;
-  --color-background-dark: #0D1B3E;
-  
-  --font-headline: "Poppins", sans-serif;
-  --font-body: "Inter", sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-[#F8F9FC] text-slate-900 font-body transition-colors duration-300;
-  }
-  
-  body.dark {
-    @apply bg-[#0D1B3E] text-white;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    @apply bg-lightBg text-slate-900 dark:bg-darkBg dark:text-slate-100 transition-colors duration-300;
   }
 }
 
-@layer components {
+@layer utilities {
   .glass-card {
-    @apply bg-white/80 dark:bg-white/5 backdrop-blur-[12px] border border-white/20 dark:border-white/10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)];
-  }
-  
-  .btn-primary {
-    @apply bg-[#1B2F5E] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all dark:bg-white dark:text-[#1B2F5E];
-  }
-
-  .btn-accent {
-    @apply bg-[#FF6B00] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all;
+    @apply bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/15 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-2xl;
   }
 }
