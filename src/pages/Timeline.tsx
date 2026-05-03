@@ -131,8 +131,8 @@ export default function Timeline() {
         stage.details.join('\n')
       ]);
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (doc as any).autoTable({
+      // autoTable is added by import 'jspdf-autotable'
+      (doc as jsPDF & { autoTable: (options: unknown) => void }).autoTable({
         startY: 45,
         head: [['Step', 'Stage', 'Description', 'Details']],
         body: tableData,

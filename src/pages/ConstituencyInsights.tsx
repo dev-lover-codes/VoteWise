@@ -37,7 +37,7 @@ export default function ConstituencyInsights() {
       className="max-w-6xl mx-auto"
     >
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-headline font-bold text-[#1B2F5E] dark:text-white mb-4">Constituency Insights</h1>
+        <h1 className="text-4xl font-heading font-bold text-[#1B2F5E] dark:text-white mb-4">Constituency Insights</h1>
         <p className="text-slate-600 dark:text-slate-400">Explore historical voting trends and demographic data.</p>
       </div>
 
