@@ -29,4 +29,5 @@ dist-ssr/
 .planning/
 blueprint.md
 project_graph.md*
-supabase/.temp/
+supabase/
+firebase-debug.log*
