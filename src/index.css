@@ -5,11 +5,28 @@
 @layer base {
   body {
     @apply bg-lightBg text-slate-900 dark:bg-darkBg dark:text-slate-100 transition-colors duration-300;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(255, 153, 51, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(19, 136, 8, 0.05) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/15 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-2xl;
+    @apply bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-3xl transition-all duration-300;
   }
-}
+  
+  .glass-card:hover {
+    @apply shadow-[0_12px_48px_rgba(0,0,0,0.1)] border-white/40 dark:border-white/20;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 15px currentColor;
+  }
+
+  .premium-shadow {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 5px 20px -5px rgba(0, 0, 0, 0.04);
+  }
+}

@@ -1,66 +1,68 @@
-# VoteWise — Interactive Election Education Assistant
+# VoteWise — The Ultimate Election Education Assistant
 
-![VoteWise](https://via.placeholder.com/1200x600.png?text=VoteWise+-+Shape+India's+Future)
+![VoteWise](https://images.unsplash.com/photo-1540910419892-f39712c74066?auto=format&fit=crop&q=80&w=1200&h=600)
 
-**VoteWise** is a production-ready, interactive web application designed to educate Indian citizens, especially first-time voters, about the democratic election process. It uses AI, 3D elements, and modern UX design to make civic education engaging and accessible.
+**VoteWise** is a state-of-the-art, interactive web application designed to empower Indian citizens, especially first-time voters, with knowledge about the democratic election process. It combines cutting-edge AI, 3D simulations, and premium UI/UX design to make civic education engaging, accessible, and unforgettable.
 
-Built for **PromptWars 2026**.
+Built with ❤️ for the world's largest democracy.
 
-## 🌟 Features
+## 🌟 Key Features
 
-- **AI Chat Assistant:** Ask any election-related questions and get accurate, ECI-guideline-based answers powered by Claude 3.5 Sonnet.
-- **Interactive Timeline:** Follow the step-by-step journey of how India votes, from notification to results.
-- **Knowledge Quizzes:** Test your understanding across Beginner, Intermediate, and Advanced categories.
-- **Myth Buster:** Separate fact from fiction regarding EVMs, NOTA, and voting rights.
-- **User Profiles & Leaderboard:** Sign in to save your quiz progress and compete with others.
-- **Dark Mode Support:** Beautifully crafted light and dark themes.
+- **🧠 AI Election Expert:** Real-time conversational AI powered by Google Gemini 1.5 Flash, trained on official ECI guidelines.
+- **🗳️ Mock EVM Simulator:** A highly realistic Electronic Voting Machine and VVPAT simulation with audio feedback and receipt verification.
+- **🗺️ Interactive Journey:** A dynamic, step-by-step timeline of the Indian election process with deep-dive details.
+- **📊 Constituency Insights:** Visualize historical voter turnout and demographic trends with interactive charts.
+- **📝 Form 6 Simulator:** Learn how to register as a new voter through a guided, step-by-step registration simulator.
+- **⚡ Knowledge Quizzes:** gamified learning across multiple difficulty levels with badge rewards.
+- **🛡️ Myth Buster:** Proactively addresses common misconceptions about EVMs, NOTA, and voting rights.
+- **🌗 Dark Mode & Glassmorphism:** A premium, modern UI designed for accessibility and visual excellence.
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-- **Frontend:** React 18, Vite, TypeScript
-- **Styling:** Tailwind CSS v3, Framer Motion (Animations), Glassmorphism UI
-- **Database & Auth:** Supabase (PostgreSQL), Firebase Auth (Google Sign-in)
-- **AI Integration:** Anthropic Claude API (claude-3-5-sonnet-20241022)
-- **3D Elements:** Spline Viewer
-- **Icons:** Lucide React
+- **Framework:** React 19 + Vite + TypeScript
+- **Styling:** Tailwind CSS v3 + Framer Motion (Animations)
+- **UI System:** Glassmorphism, Premium Dark Mode, Lucide Icons
+- **Database:** Supabase (PostgreSQL)
+- **Authentication:** Firebase Auth (Google Integration)
+- **AI Engine:** Google Generative AI (Gemini 1.5 Flash)
+- **Visuals:** Spline 3D Viewer + Recharts (Data Viz)
+- **Tools:** Howler.js (Audio), jsPDF (Report Generation)
 
-## 🚀 Setup Instructions
+## 🚀 Local Development
 
-### Prerequisites
-- Node.js (v18 or higher)
+### 1. Prerequisites
+- Node.js (v20+)
 - npm or pnpm
 
-### 1. Clone the repository
+### 2. Installation
 ```bash
-git clone https://github.com/yourusername/votewise.git
-cd votewise
-```
-
-### 2. Install dependencies
-```bash
+git clone https://github.com/dev-lover-codes/VoteWise.git
+cd VoteWise
 npm install
 ```
 
-### 3. Set up Environment Variables
-Copy the `.env.example` to `.env` and fill in your API keys:
-```bash
-cp .env.example .env
+### 3. Environment Setup
+Create a `.env` file in the root directory and add the following keys:
+```env
+VITE_FIREBASE_API_KEY=your_key
+VITE_FIREBASE_AUTH_DOMAIN=your_domain
+VITE_FIREBASE_PROJECT_ID=your_id
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_GEMINI_API_KEY=your_gemini_key
 ```
-Ensure you have API keys from:
-- Firebase (for Authentication)
-- Supabase (for Database storage)
-- Anthropic (for Claude AI)
 
-### 4. Run the development server
+### 4. Start Development
 ```bash
 npm run dev
 ```
 
-## 📦 Deployment (Vercel)
+## 📦 Deployment
 
-This project is optimized for deployment on Vercel. 
-1. Connect your GitHub repository to Vercel.
-2. Add the environment variables from your `.env` file into the Vercel dashboard.
-3. Deploy!
+This project is optimized for deployment on Google Cloud Run and Vercel. 
 
-*Note: The `vercel.json` is included to handle React Router client-side routing.*
+- **Docker:** A `Dockerfile` and `nginx.conf` are included for containerized deployment.
+- **Vercel:** Configuration for SPA routing is handled via `vercel.json`.
+
+---
+*Disclaimer: VoteWise is an educational tool and is not officially affiliated with the Election Commission of India. Always refer to eci.gov.in for official information.*

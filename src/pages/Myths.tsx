@@ -64,7 +64,7 @@ export default function Myths() {
       await saveMyFeedback(user?.uid || null, mythId, isHelpful);
       setFeedbackGiven(prev => ({ ...prev, [mythId]: true }));
       toast.success("Thank you for your feedback!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to save feedback.");
     }
   };

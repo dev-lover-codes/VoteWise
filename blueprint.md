@@ -32,6 +32,20 @@ An interactive web application designed to enhance civic awareness and voter edu
 
 ---
 
+## Codebase Mapping (Graphify) - COMPLETED
+The project has been mapped and documented in `.planning/codebase/`.
+- [x] **STACK.md**: React 19, Vite 8, TypeScript, Firebase, Supabase, Gemini AI.
+- [x] **STRUCTURE.md**: Detailed directory layout and file responsibilities.
+- [x] **ARCHITECTURE.md**: Modular SPA patterns with Context API and service abstraction.
+- [x] **INTEGRATIONS.md**: Deep dive into Firebase, Supabase, and Gemini API.
+- [x] **CONVENTIONS.md**: PascalCase components, camelCase utilities, utility-first CSS.
+- [x] **TESTING.md**: Current manual status and future automated strategy.
+- [x] **CONCERNS.md**: Tech debt, error handling, and AI hallucination risks.
+
+A visual architecture graph has been generated: [project_graph.md](file:///C:/Users/Faiz/.gemini/antigravity/brain/fac66e1b-c34b-4b40-ade4-a90017e83601/project_graph.md)
+
+---
+
 ## Stitch Panel Generation Plan
 
 ### 1. Design System Initialization

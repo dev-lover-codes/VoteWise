@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { saveQuizAttempt } from '../lib/supabase';
@@ -6,7 +6,23 @@ import { ArrowRight, CheckCircle, XCircle, Award, Star, RefreshCcw, Home } from 
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const QUIZ_CATEGORIES = [
+interface Question {
+  q: string;
+  options: string[];
+  correct: number;
+  explanation: string;
+}
+
+interface QuizCategory {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  time: string;
+  questions: Question[];
+}
+
+const QUIZ_CATEGORIES: QuizCategory[] = [
   {
     id: "voter_basics",
     title: "Voter Basics",
@@ -219,7 +235,7 @@ const QUIZ_CATEGORIES = [
 export default function Quiz() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeQuiz, setActiveQuiz] = useState<any>(null);
+  const [activeQuiz, setActiveQuiz] = useState<QuizCategory | null>(null);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -227,7 +243,7 @@ export default function Quiz() {
   const [quizFinished, setQuizFinished] = useState(false);
   const [startTime, setStartTime] = useState<number>(0);
 
-  const startQuiz = (category: any) => {
+  const startQuiz = useCallback((category: QuizCategory) => {
     setActiveQuiz(category);
     setCurrentQIndex(0);
     setSelectedOption(null);
@@ -235,7 +251,7 @@ export default function Quiz() {
     setScore(0);
     setQuizFinished(false);
     setStartTime(Date.now());
-  };
+  }, []);
 
   const handleOptionSelect = (index: number) => {
     if (showExplanation) return; // Prevent changing answer after selection
@@ -262,7 +278,7 @@ export default function Quiz() {
         try {
           await saveQuizAttempt(user.uid, activeQuiz.id, score + (selectedOption === activeQuiz.questions[currentQIndex].correct ? 1 : 0), activeQuiz.questions.length, timeTaken);
           toast.success("Quiz results saved to profile!");
-        } catch (e) {
+        } catch {
           toast.error("Failed to save quiz results");
         }
       }

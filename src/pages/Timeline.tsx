@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Search, Users, CheckSquare, Shield, Megaphone, BoxSelect, TrendingUp, ChevronDown, ChevronUp, Download, MessageCircle } from 'lucide-react';
+import { FileText, Search, Users, CheckSquare, Shield, Megaphone, BoxSelect, TrendingUp, ChevronDown, ChevronUp, Download, MessageCircle, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const TIMELINE_STAGES = [
+  // ... (same stages as before)
   {
     id: 1,
     title: "Election Notification",
@@ -103,65 +107,123 @@ export default function Timeline() {
     navigate('/chat', { state: { initialMessage: `Can you explain the "${stageTitle}" stage of the Indian election process in more detail?` } });
   };
 
+  const downloadPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Header
+      doc.setFontSize(22);
+      doc.setTextColor(255, 153, 51); // Saffron
+      doc.text("VoteWise: Indian Election Guide", 105, 20, { align: 'center' });
+      
+      doc.setFontSize(16);
+      doc.setTextColor(19, 136, 8); // Green
+      doc.text("Step-by-Step Election Process", 105, 30, { align: 'center' });
+      
+      doc.setDrawColor(200);
+      doc.line(20, 35, 190, 35);
+      
+      // Body
+      const tableData = TIMELINE_STAGES.map(stage => [
+        stage.id,
+        stage.title,
+        stage.shortDesc,
+        stage.details.join('\n')
+      ]);
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (doc as any).autoTable({
+        startY: 45,
+        head: [['Step', 'Stage', 'Description', 'Details']],
+        body: tableData,
+        headStyles: { fillColor: [27, 47, 94] }, // Primary color
+        theme: 'striped',
+        styles: { fontSize: 10, cellPadding: 5 },
+        columnStyles: {
+          0: { cellWidth: 15 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: 50 },
+          3: { cellWidth: 70 }
+        }
+      });
+      
+      doc.save("Indian_Election_Process_Guide.pdf");
+      toast.success("Guide downloaded successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate PDF. Please try again.");
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-heading font-bold text-primary dark:text-white mb-4">
-          India's Election Process — Step by Step
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent font-medium text-xs mb-4"
+        >
+          <Info size={14} />
+          Official ECI Guidelines
+        </motion.div>
+        <h1 className="text-4xl md:text-5xl font-heading font-extrabold text-primary dark:text-white mb-4 tracking-tight">
+          India's Election <span className="text-accent">Journey</span>
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Understand the journey from announcement to results.
+        <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
+          From the initial notification to the declaration of results, follow the world's largest democratic exercise.
         </p>
       </div>
 
-      <div className="flex justify-center mb-8">
-        <div className="glass-card flex p-1 rounded-full bg-slate-100 dark:bg-slate-800">
+      <div className="flex justify-center mb-12">
+        <div className="glass-card flex p-1.5 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <button 
             onClick={() => setFilter('Lok Sabha')}
-            className={`px-6 py-2 rounded-full font-medium transition-all ${filter === 'Lok Sabha' ? 'bg-primary text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+            className={`px-8 py-2.5 rounded-full font-bold transition-all duration-300 ${filter === 'Lok Sabha' ? 'bg-primary text-white shadow-lg scale-105' : 'text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white'}`}
           >
-            General (Lok Sabha)
+            Lok Sabha
           </button>
           <button 
             onClick={() => setFilter('Vidhan Sabha')}
-            className={`px-6 py-2 rounded-full font-medium transition-all ${filter === 'Vidhan Sabha' ? 'bg-primary text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+            className={`px-8 py-2.5 rounded-full font-bold transition-all duration-300 ${filter === 'Vidhan Sabha' ? 'bg-primary text-white shadow-lg scale-105' : 'text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white'}`}
           >
-            State (Vidhan Sabha)
+            Vidhan Sabha
           </button>
         </div>
       </div>
 
       <div className="relative">
-        <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-slate-700 -translate-x-1/2"></div>
+        <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-accent to-success opacity-20 -translate-x-1/2 rounded-full"></div>
         
         {TIMELINE_STAGES.map((stage, index) => (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
             key={stage.id} 
-            className={`relative mb-8 flex flex-col md:flex-row items-center md:justify-between ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+            className={`relative mb-12 flex flex-col md:flex-row items-center md:justify-between ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
           >
             <div className="hidden md:block md:w-5/12"></div>
             
-            <div className="absolute left-4 md:left-1/2 w-10 h-10 rounded-full bg-primary border-4 border-white dark:border-darkBg flex items-center justify-center text-white font-bold shadow-lg -translate-x-1/2 z-10">
+            <div className="absolute left-6 md:left-1/2 w-12 h-12 rounded-full bg-white dark:bg-slate-800 border-4 border-primary dark:border-primary flex items-center justify-center text-primary font-black shadow-xl -translate-x-1/2 z-10 transition-transform hover:scale-110">
               {stage.id}
             </div>
 
-            <div className="w-full pl-12 md:pl-0 md:w-5/12">
+            <div className="w-full pl-16 md:pl-0 md:w-5/12">
               <div 
-                className="glass-card bg-white dark:bg-white/5 p-5 cursor-pointer hover:shadow-lg transition-shadow border border-gray-200 dark:border-white/10"
+                className={`glass-card p-6 cursor-pointer hover:shadow-2xl transition-all duration-500 border border-gray-200 dark:border-white/10 group ${expandedId === stage.id ? 'premium-shadow scale-[1.02]' : ''}`}
                 onClick={() => setExpandedId(expandedId === stage.id ? null : stage.id)}
               >
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="text-accent">{stage.icon}</div>
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white">{stage.title}</h3>
+                <div className="flex items-center gap-4 mb-3">
+                  <div className={`p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-accent group-hover:scale-110 transition-transform ${expandedId === stage.id ? 'bg-accent/10 text-accent' : ''}`}>
+                    {stage.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white group-hover:text-primary dark:group-hover:text-accent transition-colors">{stage.title}</h3>
                   <div className="ml-auto text-slate-400">
                     {expandedId === stage.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </div>
                 </div>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">{stage.shortDesc}</p>
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{stage.shortDesc}</p>
                 
                 <AnimatePresence>
                   {expandedId === stage.id && (
@@ -171,19 +233,20 @@ export default function Timeline() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/10">
-                        <ul className="space-y-2 mb-4">
+                      <div className="pt-6 mt-6 border-t border-gray-100 dark:border-white/10">
+                        <ul className="space-y-3 mb-6">
                           {stage.details.map((detail, i) => (
                             <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start">
-                              <span className="text-primary mr-2">•</span> {detail}
+                              <div className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 mr-3 flex-shrink-0" />
+                              {detail}
                             </li>
                           ))}
                         </ul>
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleAskAI(stage.title); }}
-                          className="w-full flex items-center justify-center gap-2 py-2 bg-primary/10 dark:bg-white/5 text-primary dark:text-white rounded-lg hover:bg-primary/20 transition-colors font-medium text-sm"
+                          className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-bold text-sm shadow-md hover:shadow-primary/20"
                         >
-                          <MessageCircle size={16} /> Ask AI about this step
+                          <MessageCircle size={18} /> Ask AI about this step
                         </button>
                       </div>
                     </motion.div>
@@ -195,11 +258,22 @@ export default function Timeline() {
         ))}
       </div>
 
-      <div className="mt-12 text-center">
-        <button className="flex items-center gap-2 mx-auto px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-white/10 rounded-full font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-          <Download size={20} /> Download as PDF
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        className="mt-20 text-center glass-card p-10 border-2 border-primary/10"
+      >
+        <h3 className="text-2xl font-bold text-primary dark:text-white mb-4 text-glow">Take this guide with you</h3>
+        <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
+          Download our comprehensive step-by-step guide to the Indian election process for offline reading.
+        </p>
+        <button 
+          onClick={downloadPDF}
+          className="flex items-center gap-3 mx-auto px-10 py-4 bg-primary text-white rounded-full font-black hover:bg-primary/90 transition-all shadow-xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-95"
+        >
+          <Download size={22} /> DOWNLOAD GUIDE PDF
         </button>
-      </div>
+      </motion.div>
     </div>
   );
-}
+}

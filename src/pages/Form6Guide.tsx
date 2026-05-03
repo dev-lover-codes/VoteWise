@@ -38,7 +38,7 @@ export default function Form6Guide() {
 
       toast.success('Registration simulated successfully!');
       setStep(4); // Success step
-    } catch (error) {
+    } catch {
       toast.error('Failed to complete registration simulation.');
     }
   };

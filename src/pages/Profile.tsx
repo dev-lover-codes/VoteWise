@@ -5,12 +5,26 @@ import { LogOut, User, Award, CheckCircle, BarChart3, Sun, Moon, BadgeCheck, Act
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+interface QuizAttempt {
+  id: string;
+  quiz_topic: string;
+  score: number;
+  total_questions: number;
+  percentage: number;
+  completed_at: string;
+}
+
+interface UserProfile {
+  registration_status?: string;
+  has_voted?: boolean;
+}
+
 export default function Profile() {
   const { user, logOut } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ count: 0, avg: 0, best: 0 });
-  const [history, setHistory] = useState<any[]>([]);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [history, setHistory] = useState<QuizAttempt[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains('dark')
   );
@@ -28,7 +42,7 @@ export default function Profile() {
       await logOut();
       toast.success('Logged out successfully');
       navigate('/');
-    } catch (e) {
+    } catch {
       toast.error('Error logging out');
     }
   };

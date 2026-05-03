@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, CheckSquare } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { user } = useAuth();
@@ -40,6 +41,8 @@ export default function Navbar() {
               </Link>
             ))}
             
+            <ThemeToggle />
+            
             {user ? (
               <Link to="/profile" className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary dark:bg-white/10 dark:text-white hover:bg-primary/20 transition-colors">
                 {user.photoURL ? (
@@ -56,7 +59,8 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center gap-4 md:hidden">
+            <ThemeToggle />
             <button onClick={() => setIsOpen(!isOpen)} className="text-slate-600 dark:text-slate-300 p-2">
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
