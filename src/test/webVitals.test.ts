@@ -5,19 +5,21 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock web-vitals library
-const mockOnCLS = vi.fn();
-const mockOnFCP = vi.fn();
-const mockOnLCP = vi.fn();
-const mockOnTTFB = vi.fn();
-const mockOnINP = vi.fn();
+// Use vi.hoisted to declare variables before vi.mock
+const mocks = vi.hoisted(() => ({
+  mockOnCLS: vi.fn(),
+  mockOnFCP: vi.fn(),
+  mockOnLCP: vi.fn(),
+  mockOnTTFB: vi.fn(),
+  mockOnINP: vi.fn(),
+}));
 
 vi.mock('web-vitals', () => ({
-  onCLS: mockOnCLS,
-  onFCP: mockOnFCP,
-  onLCP: mockOnLCP,
-  onTTFB: mockOnTTFB,
-  onINP: mockOnINP,
+  onCLS: mocks.mockOnCLS,
+  onFCP: mocks.mockOnFCP,
+  onLCP: mocks.mockOnLCP,
+  onTTFB: mocks.mockOnTTFB,
+  onINP: mocks.mockOnINP,
 }));
 
 // Mock analytics module
@@ -49,47 +51,47 @@ describe('Web Vitals Reporter', () => {
 
   it('should register CLS listener on reportWebVitals', () => {
     reportWebVitals();
-    expect(mockOnCLS).toHaveBeenCalledOnce();
+    expect(mocks.mockOnCLS).toHaveBeenCalledOnce();
   });
 
   it('should register FCP listener on reportWebVitals', () => {
     reportWebVitals();
-    expect(mockOnFCP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnFCP).toHaveBeenCalledOnce();
   });
 
   it('should register LCP listener on reportWebVitals', () => {
     reportWebVitals();
-    expect(mockOnLCP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnLCP).toHaveBeenCalledOnce();
   });
 
   it('should register TTFB listener on reportWebVitals', () => {
     reportWebVitals();
-    expect(mockOnTTFB).toHaveBeenCalledOnce();
+    expect(mocks.mockOnTTFB).toHaveBeenCalledOnce();
   });
 
   it('should register INP listener on reportWebVitals', () => {
     reportWebVitals();
-    expect(mockOnINP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnINP).toHaveBeenCalledOnce();
   });
 
   it('should register all 5 Core Web Vitals listeners at once', () => {
     reportWebVitals();
-    expect(mockOnCLS).toHaveBeenCalledOnce();
-    expect(mockOnFCP).toHaveBeenCalledOnce();
-    expect(mockOnLCP).toHaveBeenCalledOnce();
-    expect(mockOnTTFB).toHaveBeenCalledOnce();
-    expect(mockOnINP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnCLS).toHaveBeenCalledOnce();
+    expect(mocks.mockOnFCP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnLCP).toHaveBeenCalledOnce();
+    expect(mocks.mockOnTTFB).toHaveBeenCalledOnce();
+    expect(mocks.mockOnINP).toHaveBeenCalledOnce();
   });
 
   it('should pass a callback function to each metric listener', () => {
     reportWebVitals();
     
     // Each listener should be called with a function callback
-    expect(typeof mockOnCLS.mock.calls[0][0]).toBe('function');
-    expect(typeof mockOnFCP.mock.calls[0][0]).toBe('function');
-    expect(typeof mockOnLCP.mock.calls[0][0]).toBe('function');
-    expect(typeof mockOnTTFB.mock.calls[0][0]).toBe('function');
-    expect(typeof mockOnINP.mock.calls[0][0]).toBe('function');
+    expect(typeof mocks.mockOnCLS.mock.calls[0][0]).toBe('function');
+    expect(typeof mocks.mockOnFCP.mock.calls[0][0]).toBe('function');
+    expect(typeof mocks.mockOnLCP.mock.calls[0][0]).toBe('function');
+    expect(typeof mocks.mockOnTTFB.mock.calls[0][0]).toBe('function');
+    expect(typeof mocks.mockOnINP.mock.calls[0][0]).toBe('function');
   });
 
   it('should be callable multiple times without errors', () => {

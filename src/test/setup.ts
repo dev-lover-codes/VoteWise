@@ -7,6 +7,9 @@ import { vi } from 'vitest';
 // specific module dependencies directly for better control.
 // ========================================================
 
+// Mock window.scrollTo (not available in JSDOM)
+window.scrollTo = vi.fn();
+
 // Mock window.matchMedia (not available in JSDOM)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -30,11 +33,28 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 // Mock IntersectionObserver (not available in JSDOM)
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Required for Framer Motion viewport animations
+class MockIntersectionObserver {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  disconnect = vi.fn();
+  observe = vi.fn();
+  takeRecords = vi.fn();
+  unobserve = vi.fn();
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
+
+Object.defineProperty(global, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
 
 // Mock Spline 3D viewer (heavy 3D rendering, cannot run in JSDOM)
 vi.mock('@splinetool/react-spline', () => ({
@@ -43,22 +63,22 @@ vi.mock('@splinetool/react-spline', () => ({
 
 // Mock canvas-confetti (canvas API not available in JSDOM)
 vi.mock('canvas-confetti', () => ({
-  default: vi.fn(),
+  default: () => {},
 }));
 
 // Mock howler audio library (Web Audio API not available in JSDOM)
 vi.mock('howler', () => ({
-  Howl: vi.fn().mockImplementation(() => ({
-    play: vi.fn(),
-    stop: vi.fn(),
-    pause: vi.fn(),
-    volume: vi.fn(),
-    on: vi.fn(),
-    off: vi.fn(),
-  })),
+  Howl: class {
+    play = () => {};
+    stop = () => {};
+    pause = () => {};
+    volume = () => {};
+    on = () => {};
+    off = () => {};
+  },
   Howler: {
-    volume: vi.fn(),
-    unload: vi.fn(),
+    volume: () => {},
+    unload: () => {},
   },
 }));
 

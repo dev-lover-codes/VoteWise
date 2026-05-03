@@ -6,11 +6,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 
-// Mock Firebase auth - MUST be before any imports
-const mockOnAuthStateChanged = vi.fn();
+const mocks = vi.hoisted(() => ({
+  mockOnAuthStateChanged: vi.fn(),
+  mockSupabaseFrom: vi.fn(),
+}));
 
 vi.mock('firebase/auth', () => ({
-  onAuthStateChanged: mockOnAuthStateChanged,
+  onAuthStateChanged: mocks.mockOnAuthStateChanged,
   getAuth: vi.fn(() => ({})),
   GoogleAuthProvider: vi.fn(() => ({})),
   signInWithPopup: vi.fn(),
@@ -28,16 +30,14 @@ vi.mock('../lib/firebase', () => ({
   signOut: vi.fn(),
 }));
 
-// Mock Supabase
-const mockSupabaseFrom = vi.fn();
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({
-    from: mockSupabaseFrom,
+    from: mocks.mockSupabaseFrom,
   })),
 }));
 vi.mock('../lib/supabase', () => ({
   supabase: {
-    from: mockSupabaseFrom,
+    from: mocks.mockSupabaseFrom,
   },
 }));
 
@@ -58,13 +58,13 @@ describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: auth state is null (not logged in)
-    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
+    mocks.mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(null);
       return () => {}; // unsubscribe function
     });
 
     // Setup Supabase mock chain
-    mockSupabaseFrom.mockReturnValue({
+    mocks.mockSupabaseFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
           single: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -100,7 +100,7 @@ describe('AuthContext', () => {
     });
 
     it('should provide authenticated user email when signed in', async () => {
-      mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
+      mocks.mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
         callback({
           uid: 'test-uid',
           email: 'test@example.com',
@@ -141,7 +141,7 @@ describe('AuthContext', () => {
       );
 
       await waitFor(() => {
-        expect(mockOnAuthStateChanged).toHaveBeenCalledOnce();
+        expect(mocks.mockOnAuthStateChanged).toHaveBeenCalledOnce();
       });
     });
   });
@@ -206,7 +206,7 @@ describe('AuthContext', () => {
 
   describe('User profile synchronization', () => {
     it('should query Supabase users_profile when a user signs in', async () => {
-      mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
+      mocks.mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
         callback({
           uid: 'new-user-uid',
           email: 'new@example.com',
@@ -227,12 +227,12 @@ describe('AuthContext', () => {
       });
 
       // Should have tried to access users_profile
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('users_profile');
+      expect(mocks.mockSupabaseFrom).toHaveBeenCalledWith('users_profile');
     });
 
     it('should create a new profile when user does not exist in Supabase', async () => {
       // Simulate row not found (PGRST116 = no rows returned)
-      mockSupabaseFrom.mockReturnValue({
+      mocks.mockSupabaseFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
@@ -244,7 +244,7 @@ describe('AuthContext', () => {
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
       });
 
-      mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
+      mocks.mockOnAuthStateChanged.mockImplementationOnce((_auth, callback) => {
         callback({
           uid: 'brand-new-uid',
           email: 'brandnew@example.com',

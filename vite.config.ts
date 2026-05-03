@@ -42,20 +42,16 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    // Use threads pool with limited concurrency to avoid Windows timeout issues
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: false,
-        maxThreads: 2,
-        minThreads: 1,
-      },
+    // Use forks pool for better isolation and stability on Windows
+    pool: 'forks',
+    forks: {
+      singleFork: false,
     },
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov', 'json-summary'],
       exclude: [
         'node_modules/',
         'src/test/',

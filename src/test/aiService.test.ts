@@ -5,20 +5,19 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Create controllable mock functions
+const mockSendMessage = vi.fn();
+const mockStartChat = vi.fn();
+const mockGetGenerativeModel = vi.fn();
+
 // Mock the Google Generative AI SDK before importing the module
-vi.mock('@google/generative-ai', () => ({
-  GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
-    getGenerativeModel: vi.fn().mockReturnValue({
-      startChat: vi.fn().mockReturnValue({
-        sendMessage: vi.fn().mockResolvedValue({
-          response: {
-            text: vi.fn().mockReturnValue('Mocked AI response about Indian elections.'),
-          },
-        }),
-      }),
-    }),
-  })),
-}));
+vi.mock('@google/generative-ai', () => {
+  return {
+    GoogleGenerativeAI: class MockGoogleGenerativeAI {
+      getGenerativeModel = mockGetGenerativeModel;
+    },
+  };
+});
 
 // Import actual module (not mocked by setup.ts)
 import { sendMessageToAI, SYSTEM_PROMPT } from '../lib/aiService';
@@ -26,6 +25,24 @@ import { sendMessageToAI, SYSTEM_PROMPT } from '../lib/aiService';
 describe('aiService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('VITE_GEMINI_API_KEY', 'valid-key');
+    
+    // Default success behavior
+    mockSendMessage.mockResolvedValue({
+      response: {
+        text: vi.fn().mockReturnValue('Mocked AI response about Indian elections.'),
+      },
+    });
+    mockStartChat.mockReturnValue({
+      sendMessage: mockSendMessage,
+    });
+    mockGetGenerativeModel.mockReturnValue({
+      startChat: mockStartChat,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('SYSTEM_PROMPT', () => {
@@ -70,7 +87,14 @@ describe('aiService', () => {
     ];
 
     it('should throw an informative error when API key is not configured', async () => {
-      // The default environment has 'mock-key' which triggers the early check
+      vi.stubEnv('VITE_GEMINI_API_KEY', 'mock-key');
+      await expect(sendMessageToAI(validMessages, SYSTEM_PROMPT)).rejects.toThrow(
+        'AI is temporarily unavailable. Please try again.'
+      );
+    });
+
+    it('should throw when SDK fails', async () => {
+      mockSendMessage.mockRejectedValue(new Error('SDK Error'));
       await expect(sendMessageToAI(validMessages, SYSTEM_PROMPT)).rejects.toThrow(
         'AI is temporarily unavailable. Please try again.'
       );
@@ -78,12 +102,6 @@ describe('aiService', () => {
 
     it('should throw when messages array is empty', async () => {
       await expect(sendMessageToAI([], SYSTEM_PROMPT)).rejects.toThrow();
-    });
-
-    it('should always throw the user-friendly error message, not raw SDK errors', async () => {
-      await expect(sendMessageToAI(validMessages, SYSTEM_PROMPT)).rejects.toThrow(
-        'AI is temporarily unavailable. Please try again.'
-      );
     });
   });
 

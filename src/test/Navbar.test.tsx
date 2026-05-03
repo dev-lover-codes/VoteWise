@@ -117,10 +117,10 @@ describe('Navbar Component', () => {
   });
 
   describe('Guest User State (unauthenticated)', () => {
-    it('should show Sign In option when user is not logged in', () => {
+    it('should show Login option when user is not logged in', () => {
       render(<NavbarWrapper />);
-      // Sign in text should appear somewhere in the navbar
-      const signInText = screen.queryByText(/sign in/i);
+      // Login text should appear somewhere in the navbar
+      const signInText = screen.queryByText(/login/i);
       expect(signInText).toBeTruthy();
     });
 

@@ -12,11 +12,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // =====================================================
 
 // Reusable mock functions for the query builder chain
-const mockFrom = vi.fn();
+const mocks = vi.hoisted(() => ({
+  mockFrom: vi.fn(),
+}));
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({
-    from: mockFrom,
+    from: mocks.mockFrom,
   })),
 }));
 
@@ -43,7 +45,7 @@ describe('supabase data layer', () => {
   // Helper to build mock chain
   // ============================
   function createInsertMock(response = { data: null, error: null }) {
-    mockFrom.mockReturnValue({
+    mocks.mockFrom.mockReturnValue({
       insert: vi.fn().mockResolvedValue(response),
     });
   }
@@ -62,14 +64,14 @@ describe('supabase data layer', () => {
       order: mockOrderWithLimit,
     });
 
-    mockFrom.mockReturnValue({ select: mockSelect });
+    mocks.mockFrom.mockReturnValue({ select: mockSelect });
     return { mockSelect, mockEqChain, mockSingle, mockOrderChain, mockLimitChain };
   }
 
   function createUpdateMock(response = { data: null, error: null }) {
     const mockEq = vi.fn().mockResolvedValue(response);
     const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
-    mockFrom.mockReturnValue({ update: mockUpdate });
+    mocks.mockFrom.mockReturnValue({ update: mockUpdate });
     return { mockUpdate, mockEq };
   }
 
@@ -79,7 +81,7 @@ describe('supabase data layer', () => {
   describe('saveMessage', () => {
     it('should call insert with all required fields', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMessage('session-123', 'user', 'Hello world', 'user-456');
 
@@ -95,7 +97,7 @@ describe('supabase data layer', () => {
 
     it('should pass null user_id when userId is null (guest user)', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMessage('session-123', 'user', 'Guest message', null);
 
@@ -106,23 +108,23 @@ describe('supabase data layer', () => {
 
     it('should not throw on database error', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: { message: 'DB Error' } });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await expect(saveMessage('session-123', 'user', 'Test', null)).resolves.not.toThrow();
     });
 
     it('should target the "chat_history" table', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMessage('session-123', 'assistant', 'AI reply', null);
 
-      expect(mockFrom).toHaveBeenCalledWith('chat_history');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('chat_history');
     });
 
     it('should save assistant messages correctly', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMessage('session-1', 'assistant', 'AI response', 'uid-123');
 
@@ -139,7 +141,7 @@ describe('supabase data layer', () => {
     it('should query the "chat_history" table', async () => {
       createSelectMock({ data: [], error: null });
       await getSessionMessages('session-123');
-      expect(mockFrom).toHaveBeenCalledWith('chat_history');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('chat_history');
     });
 
     it('should return an empty array when no messages exist', async () => {
@@ -162,7 +164,7 @@ describe('supabase data layer', () => {
   describe('saveQuizAttempt', () => {
     it('should insert with correctly calculated percentage', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveQuizAttempt('user-123', 'voter_basics', 8, 10, 120);
 
@@ -180,7 +182,7 @@ describe('supabase data layer', () => {
 
     it('should calculate 100% for a perfect score', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveQuizAttempt('user-123', 'voter_basics', 10, 10, 60);
 
@@ -191,7 +193,7 @@ describe('supabase data layer', () => {
 
     it('should calculate 0% for a zero score', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveQuizAttempt('user-123', 'voter_basics', 0, 10, 300);
 
@@ -202,11 +204,11 @@ describe('supabase data layer', () => {
 
     it('should target the "quiz_attempts" table', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveQuizAttempt('user-123', 'election_process', 7, 10, 180);
 
-      expect(mockFrom).toHaveBeenCalledWith('quiz_attempts');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('quiz_attempts');
     });
   });
 
@@ -216,7 +218,7 @@ describe('supabase data layer', () => {
   describe('getUserStats', () => {
     it('should return zeros when user has no quiz history', async () => {
       const mockEq = vi.fn().mockResolvedValue({ data: [], error: null });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({ eq: mockEq }),
       });
 
@@ -226,7 +228,7 @@ describe('supabase data layer', () => {
 
     it('should return zeros on database error', async () => {
       const mockEq = vi.fn().mockResolvedValue({ data: null, error: { message: 'Error' } });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({ eq: mockEq }),
       });
 
@@ -241,7 +243,7 @@ describe('supabase data layer', () => {
         { score: 7, percentage: 70 },
       ];
       const mockEq = vi.fn().mockResolvedValue({ data: mockData, error: null });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({ eq: mockEq }),
       });
 
@@ -258,7 +260,7 @@ describe('supabase data layer', () => {
         { score: 3, percentage: 30 },
       ];
       const mockEq = vi.fn().mockResolvedValue({ data: mockData, error: null });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({ eq: mockEq }),
       });
 
@@ -273,7 +275,7 @@ describe('supabase data layer', () => {
   describe('saveMyFeedback', () => {
     it('should insert myth feedback with a userId', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMyFeedback('user-123', 'myth-001', true);
 
@@ -288,7 +290,7 @@ describe('supabase data layer', () => {
 
     it('should insert myth feedback with null userId for guest users', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMyFeedback(null, 'myth-001', false);
 
@@ -299,11 +301,11 @@ describe('supabase data layer', () => {
 
     it('should target the "myth_feedback" table', async () => {
       const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-      mockFrom.mockReturnValue({ insert: mockInsert });
+      mocks.mockFrom.mockReturnValue({ insert: mockInsert });
 
       await saveMyFeedback('uid-123', 'myth-002', true);
 
-      expect(mockFrom).toHaveBeenCalledWith('myth_feedback');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('myth_feedback');
     });
   });
 
@@ -322,7 +324,7 @@ describe('supabase data layer', () => {
     it('should target the "users_profile" table', async () => {
       createUpdateMock();
       await updateRegistrationStatus('user-123', 'Approved');
-      expect(mockFrom).toHaveBeenCalledWith('users_profile');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('users_profile');
     });
   });
 
@@ -355,7 +357,7 @@ describe('supabase data layer', () => {
       const mockLimit = vi.fn().mockResolvedValue({ data: [], error: null });
       const mockOrder = vi.fn().mockReturnValue({ limit: mockLimit });
       const mockSelect = vi.fn().mockReturnValue({ order: mockOrder });
-      mockFrom.mockReturnValue({ select: mockSelect });
+      mocks.mockFrom.mockReturnValue({ select: mockSelect });
 
       await getLeaderboard();
 
@@ -366,7 +368,7 @@ describe('supabase data layer', () => {
       const mockLimit = vi.fn().mockResolvedValue({ data: null, error: { message: 'Error' } });
       const mockOrder = vi.fn().mockReturnValue({ limit: mockLimit });
       const mockSelect = vi.fn().mockReturnValue({ order: mockOrder });
-      mockFrom.mockReturnValue({ select: mockSelect });
+      mocks.mockFrom.mockReturnValue({ select: mockSelect });
 
       const result = await getLeaderboard();
       expect(result).toEqual([]);
@@ -375,7 +377,7 @@ describe('supabase data layer', () => {
     it('should apply a limit of 5 entries', async () => {
       const mockLimit = vi.fn().mockResolvedValue({ data: [], error: null });
       const mockOrder = vi.fn().mockReturnValue({ limit: mockLimit });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({ order: mockOrder }),
       });
 
@@ -428,7 +430,7 @@ describe('supabase data layer', () => {
         data: null,
         error: { code: 'PGRST116', message: 'Row not found' },
       });
-      mockFrom.mockReturnValue({
+      mocks.mockFrom.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({ single: mockSingle }),
         }),
@@ -441,7 +443,7 @@ describe('supabase data layer', () => {
     it('should target the "users_profile" table', async () => {
       createSelectMock();
       await getUserProfile('user-123');
-      expect(mockFrom).toHaveBeenCalledWith('users_profile');
+      expect(mocks.mockFrom).toHaveBeenCalledWith('users_profile');
     });
   });
 });
