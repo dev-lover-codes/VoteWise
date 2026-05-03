@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Form6Guide from '../pages/Form6Guide';
 import { BrowserRouter } from 'react-router-dom';
@@ -33,7 +33,7 @@ vi.mock('../lib/supabase');
 describe('Form6Guide Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(supabase.updateRegistrationStatus).mockResolvedValue({} as any);
+    vi.mocked(supabase.updateRegistrationStatus).mockResolvedValue(null);
   });
 
   const renderComponent = () => {

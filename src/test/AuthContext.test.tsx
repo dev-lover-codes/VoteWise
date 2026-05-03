@@ -158,10 +158,11 @@ describe('AuthContext', () => {
     });
 
     it('should return all required auth interface methods', async () => {
-      let authContext: ReturnType<typeof useAuth> | null = null;
+      const authContext: Partial<ReturnType<typeof useAuth>> = {};
 
       function AuthContextCapture() {
-        authContext = useAuth();
+        const ctx = useAuth();
+        Object.assign(authContext, ctx);
         return null;
       }
 
@@ -172,22 +173,23 @@ describe('AuthContext', () => {
       );
 
       await waitFor(() => {
-        expect(authContext).not.toBeNull();
+        expect(authContext.signInWithGoogle).toBeDefined();
       });
 
-      expect(typeof authContext!.signInWithGoogle).toBe('function');
-      expect(typeof authContext!.signInWithEmail).toBe('function');
-      expect(typeof authContext!.signUpWithEmail).toBe('function');
-      expect(typeof authContext!.logOut).toBe('function');
-      expect('user' in authContext!).toBe(true);
-      expect('loading' in authContext!).toBe(true);
+      expect(typeof authContext.signInWithGoogle).toBe('function');
+      expect(typeof authContext.signInWithEmail).toBe('function');
+      expect(typeof authContext.signUpWithEmail).toBe('function');
+      expect(typeof authContext.logOut).toBe('function');
+      expect('user' in authContext).toBe(true);
+      expect('loading' in authContext).toBe(true);
     });
 
     it('should expose a loading boolean', async () => {
-      let authContext: ReturnType<typeof useAuth> | null = null;
+      const authContext: Partial<ReturnType<typeof useAuth>> = {};
 
       function AuthContextCapture() {
-        authContext = useAuth();
+        const currentContext = useAuth();
+        Object.assign(authContext, currentContext);
         return null;
       }
 
@@ -198,8 +200,8 @@ describe('AuthContext', () => {
       );
 
       await waitFor(() => {
-        expect(authContext).not.toBeNull();
-        expect(typeof authContext!.loading).toBe('boolean');
+        expect(authContext.loading).toBeDefined();
+        expect(typeof authContext.loading).toBe('boolean');
       });
     });
   });

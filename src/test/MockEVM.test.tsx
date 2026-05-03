@@ -22,7 +22,7 @@ vi.mock('../lib/supabase');
 describe('MockEVM Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(supabase.updateVotingStatus).mockResolvedValue({} as any);
+    vi.mocked(supabase.updateVotingStatus).mockResolvedValue(null);
   });
 
   it('renders the EVM simulator heading', () => {

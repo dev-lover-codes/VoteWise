@@ -28,8 +28,8 @@ export default function Auth() {
       await signInWithGoogle();
       toast.success('Successfully logged in!');
       navigate('/chat');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in with Google');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
@@ -51,8 +51,8 @@ export default function Auth() {
         toast.success('Account created successfully!');
       }
       navigate('/chat');
-    } catch (error: any) {
-      toast.error(error.message || 'Authentication failed');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Authentication failed');
     } finally {
       setLoading(false);
     }

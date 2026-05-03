@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { sendMessageToAI, SYSTEM_PROMPT } from '../lib/aiService';
 import { saveMessage } from '../lib/supabase';
@@ -30,23 +30,15 @@ export default function Chat() {
     "Who is eligible to vote in India?"
   ];
 
-  useEffect(() => {
-    if (location.state?.initialMessage) {
-      handleSend(location.state.initialMessage);
-      // Clear state so it doesn't resend on refresh
-      window.history.replaceState({}, document.title);
-    }
-  }, [location.state]);
-
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, loading]);
+  }, [messages, loading, scrollToBottom]);
 
-  const handleSend = async (text: string = input) => {
+  const handleSend = useCallback(async (text: string = input) => {
     if (!text.trim()) return;
 
     if (!user && guestCount >= guestLimit) {
@@ -78,12 +70,25 @@ export default function Chat() {
         localStorage.setItem('guest_chat_count', newCount.toString());
       }
     } catch (error) {
+      console.error("Chat Error:", error);
       toast.error("AI is temporarily unavailable. Please try again.");
       setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I am having trouble connecting right now. Please try again later." }]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [input, user, guestCount, guestLimit, navigate, sessionId, messages]);
+
+  useEffect(() => {
+    if (location.state?.initialMessage) {
+      const msg = location.state.initialMessage;
+      // Use a microtask to avoid synchronous setState warning in effect
+      Promise.resolve().then(() => {
+        handleSend(msg);
+      });
+      // Clear state so it doesn't resend on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, handleSend]);
 
   const handleNewChat = () => {
     setMessages([]);

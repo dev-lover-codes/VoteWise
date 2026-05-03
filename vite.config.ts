@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+/// <reference types="vitest" />
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
@@ -36,9 +37,6 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     // Use forks pool for better isolation and stability on Windows
     pool: 'forks',
-    forks: {
-      singleFork: false,
-    },
     testTimeout: 60000,
     hookTimeout: 60000,
     coverage: {

@@ -44,13 +44,7 @@ describe('supabase data layer', () => {
   // ============================
   // Helper to build mock chain
   // ============================
-  function createInsertMock(response: any = { data: null, error: null }) {
-    mocks.mockFrom.mockReturnValue({
-      insert: vi.fn().mockResolvedValue(response),
-    });
-  }
-
-  function createSelectMock(response: any = { data: [], error: null }) {
+  function createSelectMock(response: unknown = { data: [], error: null }) {
     const mockSingle = vi.fn().mockResolvedValue(response);
     const mockOrderChain = vi.fn().mockResolvedValue(response);
     const mockLimitChain = vi.fn().mockResolvedValue(response);
@@ -68,7 +62,7 @@ describe('supabase data layer', () => {
     return { mockSelect, mockEqChain, mockSingle, mockOrderChain, mockLimitChain };
   }
 
-  function createUpdateMock(response: any = { data: null, error: null }) {
+  function createUpdateMock(response: unknown = { data: null, error: null }) {
     const mockEq = vi.fn().mockResolvedValue(response);
     const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
     mocks.mockFrom.mockReturnValue({ update: mockUpdate });

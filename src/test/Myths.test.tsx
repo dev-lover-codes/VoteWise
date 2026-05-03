@@ -76,7 +76,8 @@ describe('Myths Component', () => {
     const mythTitle = screen.getByText(/EVMs can be hacked and votes can be changed/i);
     fireEvent.click(mythTitle);
     
-    const thumbsUpBtn = screen.getAllByRole('button').find(btn => btn.querySelector('svg')); // Simplified selector
+    // Simplified selector - unused variable removed
+
     // Actually, let's just find by icon if possible or use a more specific way
     const buttons = screen.getAllByRole('button');
     // The thumbs up button is the first one in the feedback section
