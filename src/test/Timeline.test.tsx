@@ -14,17 +14,21 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock jsPDF
-vi.mock('jspdf', () => ({
-  jsPDF: vi.fn().mockImplementation(() => ({
-    setFontSize: vi.fn(),
-    setTextColor: vi.fn(),
-    text: vi.fn(),
-    setDrawColor: vi.fn(),
-    line: vi.fn(),
-    save: vi.fn(),
-    autoTable: vi.fn(),
-  })),
-}));
+vi.mock('jspdf', () => {
+  return {
+    jsPDF: vi.fn().mockImplementation(function() {
+      return {
+        setFontSize: vi.fn(),
+        setTextColor: vi.fn(),
+        text: vi.fn(),
+        setDrawColor: vi.fn(),
+        line: vi.fn(),
+        save: vi.fn(),
+        autoTable: vi.fn(),
+      };
+    }),
+  };
+});
 
 // Mock react-hot-toast
 vi.mock('react-hot-toast', () => ({

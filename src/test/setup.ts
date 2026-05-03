@@ -91,7 +91,10 @@ beforeEach(() => {
       message.includes('Warning: ReactDOM.render is no longer supported') ||
       message.includes('Not implemented: navigation') ||
       message.includes('Warning: An update to') ||
-      message.includes('inside a test was not wrapped in act')
+      message.includes('inside a test was not wrapped in act') ||
+      message.includes('React does not recognize the `whileInView` prop') ||
+      message.includes('suspended resource finished loading') ||
+      message.includes('Error calling Gemini API')
     ) {
       return;
     }

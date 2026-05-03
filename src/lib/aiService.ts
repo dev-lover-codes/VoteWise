@@ -23,6 +23,10 @@ export async function sendMessageToAI(messages: { role: string; content: string 
       })),
     });
 
+    if (messages.length === 0) {
+      throw new Error("No messages provided");
+    }
+
     const lastMessage = messages[messages.length - 1].content;
     const result = await chat.sendMessage(lastMessage);
     const response = await result.response;
