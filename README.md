@@ -1,52 +1,66 @@
-# VoteWise — Your guide to India's democracy
+# VoteWise — Interactive Election Education Assistant
 
-VoteWise is an interactive election process education assistant designed for Indian voters, especially first-time voters. It simplifies the election process, explains voter rights, debunks myths, and provides an AI-powered chat assistant.
+![VoteWise](https://via.placeholder.com/1200x600.png?text=VoteWise+-+Shape+India's+Future)
 
-![VoteWise Screenshot](https://via.placeholder.com/800x400.png?text=VoteWise+Screenshot)
+**VoteWise** is a production-ready, interactive web application designed to educate Indian citizens, especially first-time voters, about the democratic election process. It uses AI, 3D elements, and modern UX design to make civic education engaging and accessible.
 
-## Features
+Built for **PromptWars 2026**.
 
-- **Interactive Election Timeline:** Step-by-step visual guide to the entire election process (Lok Sabha & Vidhan Sabha).
-- **AI Chat Assistant:** Ask any election-related question and get answers based on official ECI guidelines. Powered by Claude API.
-- **Election Knowledge Quiz:** Test your knowledge on Voter Basics, Election Process, and Voting Rights.
-- **Myth Buster:** Learn the truth about common election myths and rumors.
-- **User Profiles:** Track your quiz progress and stats across sessions.
+## 🌟 Features
 
-## Tech Stack
+- **AI Chat Assistant:** Ask any election-related questions and get accurate, ECI-guideline-based answers powered by Claude 3.5 Sonnet.
+- **Interactive Timeline:** Follow the step-by-step journey of how India votes, from notification to results.
+- **Knowledge Quizzes:** Test your understanding across Beginner, Intermediate, and Advanced categories.
+- **Myth Buster:** Separate fact from fiction regarding EVMs, NOTA, and voting rights.
+- **User Profiles & Leaderboard:** Sign in to save your quiz progress and compete with others.
+- **Dark Mode Support:** Beautifully crafted light and dark themes.
 
-- **Frontend:** React 18 + Vite + TypeScript
-- **Styling:** Tailwind CSS v4, Glassmorphism UI
-- **Authentication:** Firebase Auth (Google + Email/Password)
-- **Database:** Supabase (PostgreSQL)
-- **AI:** Anthropic Claude (claude-3-sonnet-20240229)
-- **3D Graphics:** Spline (@splinetool/react-spline)
-- **Animations:** Framer Motion
+## 🛠️ Tech Stack
 
-## Setup Instructions
+- **Frontend:** React 18, Vite, TypeScript
+- **Styling:** Tailwind CSS v3, Framer Motion (Animations), Glassmorphism UI
+- **Database & Auth:** Supabase (PostgreSQL), Firebase Auth (Google Sign-in)
+- **AI Integration:** Anthropic Claude API (claude-3-5-sonnet-20241022)
+- **3D Elements:** Spline Viewer
+- **Icons:** Lucide React
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/votewise.git
-   cd votewise
-   ```
+## 🚀 Setup Instructions
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or pnpm
 
-3. **Environment Variables**
-   Create a `.env` file in the root directory and copy the contents from `.env.example`. Fill in your Firebase, Supabase, and Anthropic API keys.
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/votewise.git
+cd votewise
+```
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+### 2. Install dependencies
+```bash
+npm install
+```
 
-## Built for PromptWars 2026
-This application was built as part of PromptWars 2026, demonstrating AI-assisted development and interactive civic education tools.
+### 3. Set up Environment Variables
+Copy the `.env.example` to `.env` and fill in your API keys:
+```bash
+cp .env.example .env
+```
+Ensure you have API keys from:
+- Firebase (for Authentication)
+- Supabase (for Database storage)
+- Anthropic (for Claude AI)
 
-## Live Demo
-[Live Demo Link Placeholder]
-# VoteWise
-# VoteWise
+### 4. Run the development server
+```bash
+npm run dev
+```
+
+## 📦 Deployment (Vercel)
+
+This project is optimized for deployment on Vercel. 
+1. Connect your GitHub repository to Vercel.
+2. Add the environment variables from your `.env` file into the Vercel dashboard.
+3. Deploy!
+
+*Note: The `vercel.json` is included to handle React Router client-side routing.*

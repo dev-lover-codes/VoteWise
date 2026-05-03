@@ -1,146 +1,170 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserStats, supabase } from '../lib/supabase';
-import { User, LogOut, Moon, Sun, Award, Shield, Star, Medal, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  icon_type: string;
-}
+import { getUserStats, getQuizHistory, getUserProfile } from '../lib/supabase';
+import { LogOut, User, Award, CheckCircle, BarChart3, Sun, Moon, BadgeCheck, Activity, Star } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
-  const [stats, setStats] = useState({ count: 0, average: 0, best: 0 });
-  const [profile, setProfile] = useState<any>(null);
-  const [badges, setBadges] = useState<Badge[]>([]);
-  const [isDark, setIsDark] = useState(document.body.classList.contains('dark'));
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ count: 0, avg: 0, best: 0 });
+  const [history, setHistory] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [darkMode, setDarkMode] = useState(
+    document.documentElement.classList.contains('dark')
+  );
 
   useEffect(() => {
     if (user) {
-      getUserStats(user.uid).then(setStats).catch(console.error);
-      
-      // Fetch profile details
-      supabase.from('users_profile').select('*').eq('id', user.uid).single().then(({ data }) => setProfile(data));
-      
-      // Fetch awarded badges
-      supabase
-        .from('user_badges')
-        .select('badge_id, badges(*)')
-        .eq('user_id', user.uid)
-        .then(({ data }) => {
-          if (data) setBadges(data.map((d: any) => d.badges));
-        });
+      getUserStats(user.uid).then(setStats);
+      getQuizHistory(user.uid).then(setHistory);
+      getUserProfile(user.uid).then(setUserProfile);
     }
   }, [user]);
 
-  const toggleDarkMode = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    document.body.classList.toggle('dark', newMode);
-    localStorage.setItem('darkMode', String(newMode));
-  };
-
-  const getBadgeIcon = (type: string) => {
-    switch(type) {
-      case 'medal': return <Medal className="text-amber-500" size={32} />;
-      case 'shield': return <Shield className="text-blue-500" size={32} />;
-      case 'star': return <Star className="text-yellow-500" size={32} />;
-      case 'award': return <Award className="text-[#FF6B00]" size={32} />;
-      default: return <AlertCircle className="text-slate-400" size={32} />;
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      toast.success('Logged out successfully');
+      navigate('/');
+    } catch (e) {
+      toast.error('Error logging out');
     }
   };
 
+  const toggleDarkMode = () => {
+    if (darkMode) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+    setDarkMode(!darkMode);
+  };
+
+  if (!user) return null;
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="max-w-4xl mx-auto"
-    >
-      <div className="glass-card p-8 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8">
-        <div className="shrink-0 relative">
-          {user?.photoURL ? (
-            <img src={user.photoURL} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white/50 shadow-lg" />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-[#1B2F5E] text-white flex items-center justify-center border-4 border-white/50 shadow-lg">
-              <User size={48} />
-            </div>
-          )}
-          {profile?.streak_count > 0 && (
-            <div className="absolute -bottom-2 -right-2 bg-[#FF6B00] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-              🔥 {profile.streak_count}
-            </div>
-          )}
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-heading font-bold text-primary dark:text-white mb-8">Voter Dashboard</h1>
+      
+      {/* Progress Bar Section */}
+      <div className="glass-card bg-white dark:bg-white/5 p-6 mb-8 border border-gray-200 dark:border-white/10">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <Activity className="text-primary" size={20} /> Voter Education Progress
+          </h3>
+          <span className="font-bold text-accent">
+            {Math.round(((userProfile?.registration_status === 'Complete' ? 1 : 0) + (userProfile?.has_voted ? 1 : 0) + (stats.count > 0 ? 1 : 0)) / 3 * 100)}%
+          </span>
         </div>
-        
-        <div className="flex-1 text-center md:text-left">
-          <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-            <h1 className="text-3xl font-headline font-bold">{user?.displayName || 'Voter'}</h1>
-            {profile?.total_points > 0 && (
-              <span className="text-sm font-bold text-[#1A6B3A] bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full">
-                {profile.total_points} XP
-              </span>
-            )}
-          </div>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">{user?.email}</p>
-          
-          <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-            <button onClick={toggleDarkMode} className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
-              {isDark ? 'Light' : 'Dark'}
-            </button>
-            <button onClick={signOut} className="flex items-center gap-2 px-4 py-2 bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 rounded-lg text-sm font-medium hover:bg-rose-200 dark:hover:bg-rose-900/50 transition">
-              <LogOut size={16} />
-              Sign Out
-            </button>
-          </div>
+        <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
+          <div className="bg-primary h-3 rounded-full transition-all duration-1000" style={{ width: `${((userProfile?.registration_status === 'Complete' ? 1 : 0) + (userProfile?.has_voted ? 1 : 0) + (stats.count > 0 ? 1 : 0)) / 3 * 100}%` }}></div>
         </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="glass-card p-6 text-center">
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Quizzes Taken</p>
-          <p className="text-4xl font-bold text-[#1B2F5E] dark:text-white">{stats.count}</p>
+        <div className="glass-card bg-white dark:bg-white/5 p-6 flex flex-col items-center justify-center text-center md:col-span-1">
+          {user.photoURL ? (
+            <img src={user.photoURL} alt="Avatar" className="w-24 h-24 rounded-full mb-4 border-4 border-white dark:border-white/10 shadow-lg" />
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+              <User size={40} />
+            </div>
+          )}
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">{user.displayName || 'User'}</h2>
+          <p className="text-slate-500 mb-6">{user.email}</p>
+          
+          <div className="w-full space-y-3 mb-6">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Registration</span>
+              <span className={`text-sm font-bold ${userProfile?.registration_status === 'Complete' ? 'text-success' : 'text-accent'}`}>
+                {userProfile?.registration_status || 'Pending'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Badges Earned</span>
+              <div className="flex gap-2">
+                {userProfile?.registration_status === 'Complete' && <div title="Certified Registrant"><BadgeCheck className="text-primary" size={20} /></div>}
+                {userProfile?.has_voted && <div title="Certified Voter"><Award className="text-success" size={20} /></div>}
+                {stats.best >= 70 && <div title="Quiz Master"><Star className="text-accent" size={20} fill="currentColor" /></div>}
+              </div>
+            </div>
+          </div>
+          
+          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+            <LogOut size={18} /> Sign Out
+          </button>
+          
+          <div className="mt-4 w-full pt-4 border-t border-gray-200 dark:border-white/10">
+            <button onClick={toggleDarkMode} className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              Toggle {darkMode ? 'Light' : 'Dark'} Mode
+            </button>
+          </div>
         </div>
-        <div className="glass-card p-6 text-center">
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Average Score</p>
-          <p className="text-4xl font-bold text-[#1A6B3A]">{Math.round(stats.average)}%</p>
-        </div>
-        <div className="glass-card p-6 text-center">
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Best Score</p>
-          <p className="text-4xl font-bold text-[#FF6B00]">{Math.round(stats.best)}%</p>
+
+        <div className="md:col-span-2 grid grid-cols-2 gap-4">
+          <div className="glass-card bg-white dark:bg-white/5 p-6 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-2 text-primary dark:text-blue-400">
+              <CheckCircle size={24} />
+              <h3 className="font-medium">Quizzes Taken</h3>
+            </div>
+            <p className="text-4xl font-bold text-slate-800 dark:text-white">{stats.count}</p>
+          </div>
+          
+          <div className="glass-card bg-white dark:bg-white/5 p-6 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-2 text-accent">
+              <BarChart3 size={24} />
+              <h3 className="font-medium">Average Score</h3>
+            </div>
+            <p className="text-4xl font-bold text-slate-800 dark:text-white">{Math.round(stats.avg)}%</p>
+          </div>
+          
+          <div className="glass-card bg-white dark:bg-white/5 p-6 flex flex-col justify-center col-span-2">
+            <div className="flex items-center gap-3 mb-2 text-success">
+              <Award size={24} />
+              <h3 className="font-medium">Best Score</h3>
+            </div>
+            <p className="text-4xl font-bold text-slate-800 dark:text-white">{stats.best}%</p>
+          </div>
         </div>
       </div>
 
-      <h2 className="text-2xl font-headline font-bold mb-6 flex items-center gap-2">
-        <Award className="text-[#FF6B00]" />
-        Your Achievements
-      </h2>
-
-      {badges.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {badges.map((badge) => (
-            <motion.div 
-              key={badge.id} 
-              whileHover={{ scale: 1.05 }}
-              className="glass-card p-6 flex flex-col items-center text-center group"
-            >
-              <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 shadow-inner group-hover:bg-[#FF6B00]/10 transition">
-                {getBadgeIcon(badge.icon_type)}
+      <h2 className="text-2xl font-heading font-bold text-slate-800 dark:text-white mb-4">Quiz History</h2>
+      
+      {history.length > 0 ? (
+        <div className="space-y-4">
+          {history.map((item) => (
+            <div key={item.id} className="glass-card bg-white dark:bg-white/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 className="font-bold text-lg text-slate-800 dark:text-white capitalize">{item.quiz_topic.replace('_', ' ')}</h4>
+                <p className="text-sm text-slate-500">{new Date(item.completed_at).toLocaleDateString()}</p>
               </div>
-              <h3 className="font-bold text-sm mb-1">{badge.name}</h3>
-              <p className="text-[10px] text-slate-500">{badge.description}</p>
-            </motion.div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-sm text-slate-500">Score</p>
+                  <p className="font-bold text-primary dark:text-blue-300">{item.score} / {item.total_questions}</p>
+                </div>
+                <div className={`w-16 text-center py-1 rounded-lg font-bold ${
+                  item.percentage >= 70 ? 'bg-success/20 text-success' : 
+                  item.percentage >= 40 ? 'bg-accent/20 text-accent' : 
+                  'bg-red-500/20 text-red-500'
+                }`}>
+                  {item.percentage}%
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
-        <div className="glass-card p-12 text-center text-slate-500 italic">
-          Pass your first quiz to earn a badge!
+        <div className="text-center py-12 bg-white/50 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
+          <p className="text-slate-500">You haven't taken any quizzes yet.</p>
+          <button onClick={() => navigate('/quiz')} className="mt-4 px-6 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary/90 transition-colors">
+            Take a Quiz
+          </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -1,11 +1,11 @@
 {
   "mcpServers": {
-    "stitch": {
-      "url": "https://stitch.googleapis.com/mcp",
-      "type": "http"
-    },
     "supabase": {
       "url": "https://mcp.supabase.com/mcp?project_ref=bgpzqnvpzangdkbidanr",
+      "type": "http"
+    },
+    "stitch": {
+      "url": "http://localhost:3005",
       "type": "http"
     }
   }

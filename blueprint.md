@@ -1,6 +1,7 @@
-# VoteWise Blueprint
+# Project Blueprint: Election Awareness App
 
-VoteWise is an interactive election process education assistant designed for Indian voters, focusing on first-time voters and students. It provides a modern, interactive, and AI-powered experience to demystify democracy.
+## Overview
+An interactive web application designed to enhance civic awareness and voter education in India. The app features educational modules like a Mock EVM, Form 6 registration guide, election timelines, and AI-powered chat for voter queries.
 
 ## Project Identity
 - **Name:** VoteWise
@@ -9,55 +10,54 @@ VoteWise is an interactive election process education assistant designed for Ind
 - **Context:** Indian Election Commission (ECI) guidelines
 - **Repository:** [https://github.com/dev-lover-codes/VoteWise.git](https://github.com/dev-lover-codes/VoteWise.git)
 
-## Design System
-- **Colors:** 
-  - Primary: `#1B2F5E` (Navy)
-  - Accent: `#FF6B00` (Saffron)
-  - Success: `#1A6B3A` (Green)
-  - Background: `#F8F9FC` (Light), `#0D1B3E` (Dark)
-- **Fonts:** Poppins (Headings), Inter (Body)
-- **Style:** Glassmorphism, 3D depth, mobile-first responsive
+## Project Details & Features
 
-## Tech Stack
-- **Frontend:** React 18, Vite, TypeScript
-- **Styling:** Tailwind CSS v4
-- **Auth:** Firebase Auth
-- **Database:** Supabase (PostgreSQL)
-- **AI:** Claude API (Anthropic)
-- **Animations:** Framer Motion
-- **3D:** Spline
-- **Data Viz:** Recharts
-- **i18n:** react-i18next
+### Core Features
+- **Home:** Landing page with key highlights and quick access to modules.
+- **Chat:** AI-powered assistant to answer election-related questions.
+- **Timeline:** Interactive timeline of important election dates and historical milestones.
+- **Quiz:** Educational quizzes to test knowledge about the Indian electoral system.
+- **Myths:** Fact-checking section to debunk common election-related misinformation.
+- **Mock EVM:** A simulation of an Electronic Voting Machine to familiarize voters with the process.
+- **Form 6 Guide:** Step-by-step guidance for new voter registration.
+- **Constituency Insights:** Data and insights about various constituencies.
+- **Profile:** User profile management and progress tracking.
 
-## App Structure & Features
+### Tech Stack
+- **Frontend:** React (TypeScript), Vite
+- **Styling:** Tailwind CSS, Framer Motion for animations
+- **State Management:** React Context API (AuthContext)
+- **Backend/Services:** Firebase, Supabase
+- **Design System:** (To be defined in Stitch)
 
-### Core Routes
-1.  **Home (`/`):** Hero section with Spline 3D ballot box, feature cards, and CTAs.
-2.  **AI Chat (`/chat`):** Election Assistant powered by Claude with ECI-specific system prompt.
-3.  **Timeline (`/timeline`):** 8-stage interactive vertical timeline of the election process.
-4.  **Quiz (`/quiz`):** 3 categories (Basics, Process, Rights) with 30 questions and leaderboard.
-5.  **Myths (`/myths`):** 8 common myths busted with AI-powered fact-checking input.
-6.  **Auth (`/auth`):** Firebase-powered login with state/profile sync to Supabase.
-7.  **Profile (`/profile`):** User stats, quiz history, and achievement badges.
+---
 
-### Extended Features
-8.  **Mock EVM (`/mock-evm`):** Interactive practice session for casting a vote on a simulated machine.
-9.  **Form 6 Wizard (`/form6-guide`):** Step-by-step assistant for new voter registration.
-10. **Constituency Insights (`/constituency`):** Historical data and charts for specific constituencies.
+## Stitch Panel Generation Plan
 
-## Database Schema (Supabase)
-- `users_profile`: ID, name, email, avatar, state, age, streak, total_points.
-- `quiz_attempts`: User ID, topic, score, percentage, time taken.
-- `chat_history`: User ID (nullable), session ID, role, message.
-- `myth_feedback`: User ID, myth ID, was_helpful.
-- `badges`: ID, name, description, icon_url.
-- `user_badges`: User ID, badge ID, awarded_at.
+### 1. Design System Initialization
+- **Primary Color:** Indian Saffron (#FF9933) or Deep Saffron.
+- **Secondary Color:** India Green (#138808).
+- **Typography:** Expressive and clear fonts (e.g., Manrope or Inter).
+- **Theme:** Light/Dark mode support.
 
-## Implementation Steps
-1.  **Environment Setup:** Install new dependencies (`recharts`, `i18next`, etc.).
-2.  **Database Migration:** Create/update tables in Supabase with RLS.
-3.  **Localization:** Setup `i18n` for English and Hindi.
-4.  **UI Core:** Build out the Glassmorphism components and Nav/Footer.
-5.  **Feature Implementation:** Build each screen iteratively.
-6.  **Gamification:** Integrate the badges and streak logic.
-7.  **Final Polish:** Dark mode refinement and responsive testing.
+### 2. Screen Generation Tasks
+I will generate the following panels in Stitch:
+1. **Home Screen:** Hero section with "Vote India" theme.
+2. **Chat Interface:** Clean messaging UI with AI personality.
+3. **Timeline View:** Vertical or horizontal scrollable timeline.
+4. **Quiz Panel:** Interactive question/answer cards with feedback.
+5. **Mock EVM:** Realistic representation of the EVM panel.
+6. **Form 6 Guide:** Multi-step wizard UI.
+7. **Auth Pages:** Modern login/signup with social options.
+
+### 3. Implementation Steps (Post-Design)
+- Review designs in Stitch.
+- Export/Reference design tokens.
+- Apply design system to existing React components.
+- Update UI logic to match new design patterns.
+
+## Deployment
+- **Platform:** Google Cloud Run
+- **Region:** us-central1
+- **Service URL:** [https://election-awareness-738373994270.us-central1.run.app](https://election-awareness-738373994270.us-central1.run.app)
+- **Deployment Method:** Containerized (Docker + Nginx)
