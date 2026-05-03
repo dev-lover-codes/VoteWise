@@ -7,15 +7,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'firebase-vendor': ['firebase/app', 'firebase/auth'],
-          'supabase-vendor': ['@supabase/supabase-js'],
-          'animation-vendor': ['framer-motion'],
-          'chart-vendor': ['recharts'],
-          'i18n-vendor': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-        },
+        // Default Vite strategy is usually sufficient for SPAs
       },
     },
     // Enable source maps for production debugging

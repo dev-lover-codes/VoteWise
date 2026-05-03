@@ -30,7 +30,7 @@ export default function Quiz() {
   }, []);
 
   const handleOptionSelect = (index: number) => {
-    if (showExplanation) return; // Prevent changing answer after selection
+    if (!activeQuiz || showExplanation) return; // Prevent changing answer after selection
     
     setSelectedOption(index);
     setShowExplanation(true);
@@ -41,6 +41,8 @@ export default function Quiz() {
   };
 
   const handleNext = async () => {
+    if (!activeQuiz) return;
+    
     if (currentQIndex < activeQuiz.questions.length - 1) {
       setCurrentQIndex(prev => prev + 1);
       setSelectedOption(null);
@@ -61,7 +63,7 @@ export default function Quiz() {
     }
   };
 
-  if (quizFinished) {
+  if (quizFinished && activeQuiz) {
     const percentage = Math.round((score / activeQuiz.questions.length) * 100);
     const getFeedbackMessage = () => {
       if (percentage <= 40) return "Keep learning! Start with our Election Timeline.";
@@ -103,7 +105,7 @@ export default function Quiz() {
 
           <div className="space-y-3">
             <button 
-              onClick={() => startQuiz(activeQuiz)}
+              onClick={() => activeQuiz && startQuiz(activeQuiz)}
               className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-md"
             >
               <RefreshCcw size={18} /> Retry Quiz
