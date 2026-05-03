@@ -7,23 +7,6 @@
         "firebase-tools@latest",
         "experimental:mcp"
       ]
-    },
-    "stitch": {
-      "url": "https://stitch.googleapis.com/mcp"
-    },
-    "vercel": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@vercel/mcp"
-      ]
-    },
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest"
-      ]
     }
   }
 }

@@ -48,3 +48,9 @@ I will generate the following panels in Stitch:
 - Export/Reference design tokens.
 - Apply design system to existing React components.
 - Update UI logic to match new design patterns.
+
+## Deployment
+- **Platform:** Google Cloud Run
+- **Region:** us-central1
+- **Service URL:** [https://election-awareness-738373994270.us-central1.run.app](https://election-awareness-738373994270.us-central1.run.app)
+- **Deployment Method:** Containerized (Docker + Nginx)
