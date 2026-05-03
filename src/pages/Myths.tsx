@@ -133,17 +133,19 @@ export default function Myths() {
                           <span className="text-slate-500 mr-2">Was this helpful?</span>
                           <button 
                             disabled={feedbackGiven[item.id]}
+                            aria-label="Helpful"
                             onClick={(e) => handleFeedback(item.id, true, e)}
                             className={`p-2 rounded-full transition-colors ${feedbackGiven[item.id] ? 'text-success bg-success/10' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                           >
-                            <ThumbsUp size={18} />
+                            <ThumbsUp size={18} aria-hidden="true" />
                           </button>
                           <button 
                             disabled={feedbackGiven[item.id]}
+                            aria-label="Not helpful"
                             onClick={(e) => handleFeedback(item.id, false, e)}
                             className={`p-2 rounded-full transition-colors ${feedbackGiven[item.id] ? 'text-slate-300' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                           >
-                            <ThumbsDown size={18} />
+                            <ThumbsDown size={18} aria-hidden="true" />
                           </button>
                         </div>
                       </div>
@@ -161,7 +163,9 @@ export default function Myths() {
         <p className="text-slate-600 dark:text-slate-400 mb-6">Ask our AI assistant directly to verify any election information.</p>
         
         <form onSubmit={handleCustomMythSubmit} className="max-w-xl mx-auto flex gap-2">
+          <label htmlFor="custom-myth-input" className="sr-only">Ask a custom myth</label>
           <input 
+            id="custom-myth-input"
             type="text" 
             value={customMyth}
             onChange={(e) => setCustomMyth(e.target.value)}

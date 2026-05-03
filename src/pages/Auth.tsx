@@ -87,8 +87,10 @@ export default function Auth() {
           {!isLogin && (
             <>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <label htmlFor="auth-name" className="sr-only">Full Name</label>
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} aria-hidden="true" />
                 <input 
+                  id="auth-name"
                   type="text" 
                   placeholder="Full Name" 
                   value={name}
@@ -97,8 +99,10 @@ export default function Auth() {
                 />
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <label htmlFor="auth-state" className="sr-only">Select State</label>
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} aria-hidden="true" />
                 <select 
+                  id="auth-state"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
                   className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none"
@@ -111,8 +115,10 @@ export default function Auth() {
           )}
 
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <label htmlFor="auth-email" className="sr-only">Email Address</label>
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} aria-hidden="true" />
             <input 
+              id="auth-email"
               type="email" 
               placeholder="Email Address" 
               required
@@ -123,8 +129,10 @@ export default function Auth() {
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <label htmlFor="auth-password" className="sr-only">Password</label>
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} aria-hidden="true" />
             <input 
+              id="auth-password"
               type="password" 
               placeholder="Password" 
               required
@@ -137,9 +145,10 @@ export default function Auth() {
           <button 
             type="submit" 
             disabled={loading}
+            aria-label={isLogin ? 'Sign In' : 'Sign Up'}
             className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl py-3 font-medium transition-colors shadow-md disabled:opacity-70 flex justify-center items-center"
           >
-            {loading ? <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : (isLogin ? 'Sign In' : 'Sign Up')}
+            {loading ? <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-label="Loading"></div> : (isLogin ? 'Sign In' : 'Sign Up')}
           </button>
         </form>
 

@@ -51,25 +51,6 @@ vi.mock('../contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock framer-motion to avoid animation rendering issues
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div {...props}>{children}</div>
-    ),
-    nav: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <nav {...props}>{children}</nav>
-    ),
-    span: ({ children, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-      <span {...props}>{children}</span>
-    ),
-    button: ({ children, ...props }: React.HTMLAttributes<HTMLButtonElement>) => (
-      <button {...props}>{children}</button>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
-
 import Navbar from '../components/Navbar';
 
 function NavbarWrapper() {

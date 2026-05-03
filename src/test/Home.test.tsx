@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock Firebase to prevent SDK initialization
@@ -30,17 +30,8 @@ import Home from '../pages/Home';
 
 // Mock Spline 3D (heavy external dependency)
 vi.mock('@splinetool/react-spline', () => ({
-  default: () => null,
-}));
-
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  __esModule: true,
+  default: () => <div data-testid="spline-mock" />,
 }));
 
 function HomeWrapper() {
@@ -53,15 +44,17 @@ function HomeWrapper() {
 
 describe('Home Page', () => {
   describe('Hero Section', () => {
-    it('should render the main heading', () => {
+    it('should render the main heading', async () => {
       render(<HomeWrapper />);
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByTestId('spline-mock')).toBeInTheDocument());
     });
 
-    it('should render the "Know Your Democratic Power" text', () => {
+    it('should render the "Know Your Democratic Power" text', async () => {
       render(<HomeWrapper />);
       expect(screen.getByText(/know your/i)).toBeInTheDocument();
       expect(screen.getByText(/democratic power/i)).toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByTestId('spline-mock')).toBeInTheDocument());
     });
 
     it('should render the hero description paragraph', () => {

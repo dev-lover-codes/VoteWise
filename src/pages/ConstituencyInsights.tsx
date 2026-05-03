@@ -43,8 +43,10 @@ export default function ConstituencyInsights() {
 
       <div className="glass-card p-6 mb-8 flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <label htmlFor="search-constituency" className="sr-only">Search constituency</label>
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} aria-hidden="true" />
           <input 
+            id="search-constituency"
             type="text" 
             placeholder="Search constituency..." 
             className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1B2F5E]"
@@ -53,8 +55,10 @@ export default function ConstituencyInsights() {
           />
         </div>
         <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
-          <MapPin size={20} className="text-[#FF6B00] ml-2" />
+          <label htmlFor="select-state" className="sr-only">Select State</label>
+          <MapPin size={20} className="text-[#FF6B00] ml-2" aria-hidden="true" />
           <select 
+            id="select-state"
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
             className="bg-transparent font-medium py-1 px-2 focus:outline-none"

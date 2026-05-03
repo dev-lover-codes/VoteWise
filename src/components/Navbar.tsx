@@ -35,6 +35,7 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
+                aria-current={location.pathname === link.path ? 'page' : undefined}
                 className={`font-medium transition-colors hover:text-accent ${location.pathname === link.path ? 'text-accent' : 'text-slate-600 dark:text-slate-300'}`}
               >
                 {link.name}
@@ -44,11 +45,11 @@ export default function Navbar() {
             <ThemeToggle />
             
             {user ? (
-              <Link to="/profile" className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary dark:bg-white/10 dark:text-white hover:bg-primary/20 transition-colors">
+              <Link to="/profile" aria-label="Go to profile" className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary dark:bg-white/10 dark:text-white hover:bg-primary/20 transition-colors">
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="w-6 h-6 rounded-full" />
+                  <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full" />
                 ) : (
-                  <User size={18} />
+                  <User size={18} aria-hidden="true" />
                 )}
                 <span className="font-medium text-sm truncate max-w-[100px]">{user.displayName || 'Profile'}</span>
               </Link>
@@ -61,7 +62,12 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4 md:hidden">
             <ThemeToggle />
-            <button onClick={() => setIsOpen(!isOpen)} className="text-slate-600 dark:text-slate-300 p-2">
+            <button 
+              onClick={() => setIsOpen(!isOpen)} 
+              aria-expanded={isOpen}
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+              className="text-slate-600 dark:text-slate-300 p-2"
+            >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -75,6 +81,7 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
+                aria-current={location.pathname === link.path ? 'page' : undefined}
                 onClick={() => setIsOpen(false)}
                 className={`block px-3 py-2 rounded-md font-medium ${location.pathname === link.path ? 'bg-primary/10 text-accent' : 'text-slate-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-white/5'}`}
               >

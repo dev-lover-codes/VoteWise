@@ -58,8 +58,49 @@ Object.defineProperty(global, 'IntersectionObserver', {
 
 // Mock Spline 3D viewer (heavy 3D rendering, cannot run in JSDOM)
 vi.mock('@splinetool/react-spline', () => ({
+  __esModule: true,
   default: () => null,
 }));
+
+// Mock framer-motion globally to avoid animation issues and prop recognition warnings
+vi.mock('framer-motion', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('framer-motion')>();
+  const React = await import('react');
+  return {
+    ...actual,
+    motion: {
+      ...actual.motion,
+      div: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('div', props)
+      )) as any,
+      button: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('button', props)
+      )) as any,
+      span: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('span', props)
+      )) as any,
+      h1: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('h1', props)
+      )) as any,
+      h2: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('h2', props)
+      )) as any,
+      h3: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('h3', props)
+      )) as any,
+      p: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('p', props)
+      )) as any,
+      nav: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('nav', props)
+      )) as any,
+      section: (({ whileInView, whileHover, whileTap, initial, animate, exit, transition, viewport, ...props }: any) => (
+        React.createElement('section', props)
+      )) as any,
+    },
+    AnimatePresence: ({ children }: any) => React.createElement(React.Fragment, null, children),
+  };
+});
 
 // Mock canvas-confetti (canvas API not available in JSDOM)
 vi.mock('canvas-confetti', () => ({
